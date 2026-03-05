@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref } from 'vue';
+import { Minus, Plus } from 'lucide-vue-next';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -10,6 +11,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import FormDialog from '@/components/forms/FormDialog.vue';
 import TodoFormFields from '@/components/forms/TodoFormFields.vue';
 import IdeaFormFields from '@/components/forms/IdeaFormFields.vue';
+import {
+  buildCalendarWeeks,
+  buildMonthlyDashboard,
+  getDailyMetricMax,
+  shiftMonth
+} from '@/lib/dashboard';
 import { useIdeaStore } from '@/stores/idea';
 import { useTodoStore } from '@/stores/todo';
 import type { Idea, IdeaStatus, Priority, Todo, TodoFilter } from '@/stores/types';
@@ -48,6 +55,8 @@ const dialogOpen = ref(false);
 const dialogType = ref<DialogType>(null);
 const editingTodoId = ref<string | null>(null);
 const editingIdeaId = ref<string | null>(null);
+const dashboardCursor = ref(new Date(new Date().getFullYear(), new Date().getMonth(), 1));
+const showFloatingLegend = ref(true);
 
 const draggedIdeaId = ref<string | null>(null);
 const hasSelected = computed(() => todoStore.selectedIds.length > 0);
@@ -244,6 +253,43 @@ const dialogDescription = computed(() => {
   if (dialogType.value?.startsWith('todo')) return '请填写任务信息';
   return '请填写想法信息';
 });
+
+const dashboardData = computed(() =>
+  buildMonthlyDashboard(todoStore.todos, ideaStore.ideas, dashboardCursor.value)
+);
+const calendarWeeks = computed(() =>
+  buildCalendarWeeks(dashboardData.value.dailyRows, dashboardCursor.value)
+);
+
+const dashboardMonthText = computed(() => {
+  const monthKey = dashboardData.value.monthKey;
+  if (!monthKey) return '';
+  const [year, month] = monthKey.split('-');
+  return `${year}年${month}月`;
+});
+
+const dailyMetricMax = computed(() => getDailyMetricMax(dashboardData.value.dailyRows));
+const weekdayLabels = ['一', '二', '三', '四', '五', '六', '日'];
+const dayText = (value: string) => value.slice(-2).replace(/^0/, '');
+const barColorClass = {
+  todoCreated: 'bg-emerald-300',
+  todoUpdated: 'bg-emerald-700',
+  ideaCreated: 'bg-orange-300',
+  ideaUpdated: 'bg-orange-600'
+};
+
+const miniBarHeight = (value: number) =>
+  value > 0
+    ? `${Math.max((value / dailyMetricMax.value) * 100, 12)}%`
+    : '0%';
+
+const goPrevMonth = () => {
+  dashboardCursor.value = shiftMonth(dashboardCursor.value, -1);
+};
+
+const goNextMonth = () => {
+  dashboardCursor.value = shiftMonth(dashboardCursor.value, 1);
+};
 </script>
 
 <template>
@@ -261,6 +307,7 @@ const dialogDescription = computed(() => {
       <TabsList>
         <TabsTrigger value="todo">任务</TabsTrigger>
         <TabsTrigger value="idea">想法看板</TabsTrigger>
+        <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
       </TabsList>
 
       <TabsContent value="todo" class="space-y-4">
@@ -359,7 +406,156 @@ const dialogDescription = computed(() => {
           </Card>
         </div>
       </TabsContent>
+
+      <TabsContent value="dashboard" class="space-y-4">
+        <Card class="flex items-center justify-between p-4">
+          <div>
+            <h2 class="text-lg font-semibold">月度统计</h2>
+            <p class="text-sm text-slate-500">{{ dashboardMonthText }}（按本地时区）</p>
+          </div>
+          <div class="flex gap-2">
+            <Button size="sm" variant="secondary" @click="goPrevMonth">上月</Button>
+            <Button size="sm" variant="secondary" @click="goNextMonth">下月</Button>
+          </div>
+        </Card>
+
+        <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <Card class="p-4">
+            <p class="text-sm text-slate-500">任务新增</p>
+            <p class="mt-1 text-2xl font-bold">{{ dashboardData.monthlyTotals.todoCreated }}</p>
+          </Card>
+          <Card class="p-4">
+            <p class="text-sm text-slate-500">任务活跃</p>
+            <p class="mt-1 text-2xl font-bold">{{ dashboardData.monthlyTotals.todoUpdated }}</p>
+          </Card>
+          <Card class="p-4">
+            <p class="text-sm text-slate-500">想法新增</p>
+            <p class="mt-1 text-2xl font-bold">{{ dashboardData.monthlyTotals.ideaCreated }}</p>
+          </Card>
+          <Card class="p-4">
+            <p class="text-sm text-slate-500">想法活跃</p>
+            <p class="mt-1 text-2xl font-bold">{{ dashboardData.monthlyTotals.ideaUpdated }}</p>
+          </Card>
+        </div>
+
+        <Card class="p-4">
+          <div class="grid grid-cols-7 gap-2 text-center text-xs font-medium text-slate-500">
+            <div v-for="label in weekdayLabels" :key="label">周{{ label }}</div>
+          </div>
+          <div class="mt-2 grid grid-cols-7 gap-2">
+            <template v-for="(week, weekIndex) in calendarWeeks" :key="`week-${weekIndex}`">
+              <div
+                v-for="(cell, dayIndex) in week"
+                :key="cell ? cell.day : `empty-${weekIndex}-${dayIndex}`"
+                class="min-h-[140px] rounded-lg border p-2"
+                :class="cell ? 'border-slate-200 bg-white' : 'border-transparent bg-slate-50/80'"
+              >
+                <template v-if="cell">
+                  <div class="flex items-center justify-between">
+                    <p class="text-sm font-semibold">{{ dayText(cell.day) }}</p>
+                    <p class="text-[10px] text-slate-400">{{ cell.day }}</p>
+                  </div>
+                  <div class="mt-2 grid grid-cols-2 gap-1 text-[11px] text-slate-600">
+                    <p>任新: {{ cell.todoCreated }}</p>
+                    <p>任活: {{ cell.todoUpdated }}</p>
+                    <p>想新: {{ cell.ideaCreated }}</p>
+                    <p>想活: {{ cell.ideaUpdated }}</p>
+                  </div>
+                  <div class="mt-2 flex h-10 items-end gap-1">
+                    <div
+                      class="w-2 rounded-t"
+                      :class="barColorClass.todoCreated"
+                      :style="{ height: miniBarHeight(cell.todoCreated) }"
+                      title="任务新增"
+                    />
+                    <div
+                      class="w-2 rounded-t"
+                      :class="barColorClass.todoUpdated"
+                      :style="{ height: miniBarHeight(cell.todoUpdated) }"
+                      title="任务活跃"
+                    />
+                    <div
+                      class="w-2 rounded-t"
+                      :class="barColorClass.ideaCreated"
+                      :style="{ height: miniBarHeight(cell.ideaCreated) }"
+                      title="想法新增"
+                    />
+                    <div
+                      class="w-2 rounded-t"
+                      :class="barColorClass.ideaUpdated"
+                      :style="{ height: miniBarHeight(cell.ideaUpdated) }"
+                      title="想法活跃"
+                    />
+                  </div>
+                </template>
+              </div>
+            </template>
+          </div>
+        </Card>
+
+        <Card class="lg:hidden p-3">
+          <p class="text-xs font-semibold text-slate-600">迷你柱状图图例</p>
+          <div class="mt-2 grid grid-cols-2 gap-2 text-xs text-slate-600">
+            <div class="flex items-center gap-2">
+              <span class="h-2.5 w-2.5 rounded-sm" :class="barColorClass.todoCreated" />
+              <span>任务新增</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="h-2.5 w-2.5 rounded-sm" :class="barColorClass.todoUpdated" />
+              <span>任务活跃</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="h-2.5 w-2.5 rounded-sm" :class="barColorClass.ideaCreated" />
+              <span>想法新增</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="h-2.5 w-2.5 rounded-sm" :class="barColorClass.ideaUpdated" />
+              <span>想法活跃</span>
+            </div>
+          </div>
+        </Card>
+      </TabsContent>
     </Tabs>
+
+    <div
+      v-if="uiStore.activeTab === 'dashboard'"
+      class="fixed right-4 top-1/2 z-40 hidden -translate-y-1/2 lg:flex lg:flex-col lg:items-center lg:gap-2"
+    >
+      <button
+        type="button"
+        class="flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 shadow-md transition hover:bg-slate-50"
+        :title="showFloatingLegend ? '收起图例' : '展开图例'"
+        @click="showFloatingLegend = !showFloatingLegend"
+      >
+        <Minus v-if="showFloatingLegend" class="h-4 w-4" />
+        <Plus v-else class="h-4 w-4" />
+      </button>
+
+      <div
+        v-if="showFloatingLegend"
+        class="w-36 rounded-xl border border-slate-200 bg-white/95 p-2.5 shadow-lg backdrop-blur"
+      >
+        <p class="text-xs font-semibold text-slate-700">迷你柱状图图例</p>
+        <div class="mt-2 space-y-2 text-xs text-slate-600">
+          <div class="flex items-center gap-2">
+            <span class="h-2.5 w-2.5 rounded-sm" :class="barColorClass.todoCreated" />
+            <span>任务新增</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="h-2.5 w-2.5 rounded-sm" :class="barColorClass.todoUpdated" />
+            <span>任务活跃</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="h-2.5 w-2.5 rounded-sm" :class="barColorClass.ideaCreated" />
+            <span>想法新增</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="h-2.5 w-2.5 rounded-sm" :class="barColorClass.ideaUpdated" />
+            <span>想法活跃</span>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <FormDialog
       :open="dialogOpen"

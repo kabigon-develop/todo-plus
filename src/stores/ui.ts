@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 
-export type MainTab = 'todo' | 'idea';
+export type MainTab = 'todo' | 'idea' | 'dashboard';
 
 export const useUiStore = defineStore('ui', {
   state: () => ({
