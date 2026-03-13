@@ -1,119 +1,119 @@
-# External Integrations
+# 外部集成
 
-**Analysis Date:** 2026-03-13
+**分析日期：** 2026-03-14
 
-## APIs & External Services
+## API 与外部服务
 
-**None detected.**
+**无检测到的集成**
 
-This is a fully client-side application with no external API integrations. No HTTP requests, webhooks, or remote service calls are present in the codebase.
+这是一个完全客户端应用，无外部API集成。代码库中不存在HTTP请求、Webhooks或远程服务调用。
 
-## Data Storage
+## 数据存储
 
-**Databases:**
-- None configured
+**数据库：**
+- 未配置
 
-**Local Storage (Browser):**
-- localStorage API (native browser storage)
-  - Connection: Direct browser API
-  - Scope: Per-origin persistence
-  - Storage keys:
-    - `todo-plus:todos` - Todo list state
-    - `todo-plus:ideas` - Ideas board state
-  - Implementation: `src/stores/todo.ts`, `src/stores/idea.ts` via Pinia persist actions
+**本地存储（浏览器）：**
+- localStorage API（原生浏览器存储）
+  - 连接：直接浏览器API
+  - 范围：每个源持久化
+  - 存储键：
+    - `todo-plus:todos` - 任务列表状态
+    - `todo-plus:ideas` - 想法看板状态
+  - 实现：`src/stores/todo.ts`、`src/stores/idea.ts`通过Pinia persist操作
 
-**File Storage:**
-- Local filesystem only - exported/imported through browser download/upload features via operating system
-- No cloud storage integrations
+**文件存储：**
+- 仅本地文件系统 - 通过浏览器下载/上传功能经操作系统导出/导入
+- 无云存储集成
 
-**Caching:**
-- In-memory state management via Pinia
-- Browser localStorage caching (automatic)
-- No Redis or external cache layer
+**缓存：**
+- Pinia内存中状态管理
+- 浏览器localStorage缓存（自动）
+- 无Redis或外部缓存层
 
-## Authentication & Identity
+## 认证与身份
 
-**Auth Provider:**
-- None required - fully anonymous local application
+**认证提供商：**
+- 无 - 完全匿名本地应用
 
-**Access Control:**
-- No authentication mechanism
-- Single-user per browser profile
-- Data isolation via browser origin/domain
+**访问控制：**
+- 无认证机制
+- 每个浏览器配置单用户
+- 数据通过浏览器origin/domain隔离
 
-## Monitoring & Observability
+## 监控与可观测性
 
-**Error Tracking:**
-- None configured
+**错误追踪：**
+- 未配置
 
-**Logs:**
-- Browser console only
-- No external logging service
-- No error reporting
+**日志：**
+- 仅浏览器控制台
+- 无外部日志服务
+- 无错误报告
 
-**Performance Monitoring:**
-- None configured
-- Relies on browser DevTools: Chrome DevTools integration available via `chrome-devtools-mcp` dev dependency
+**性能监控：**
+- 未配置
+- 依赖浏览器DevTools：`chrome-devtools-mcp`开发依赖可用Chrome DevTools集成
 
-## CI/CD & Deployment
+## CI/CD 与部署
 
-**Hosting:**
-- Static hosting required (SPA deployment)
-- No backend server needed
-- Can be deployed to: Netlify, Vercel, GitHub Pages, AWS S3, CloudFlare Pages, etc.
+**托管：**
+- 需要静态托管（SPA部署）
+- 无需后端服务器
+- 可部署到：Netlify、Vercel、GitHub Pages、AWS S3、CloudFlare Pages等
 
-**CI Pipeline:**
-- Not configured - no CI/CD file detected (no .github/workflows, .gitlab-ci.yml, etc.)
-- Suggested: Add GitHub Actions or similar for automated testing and building
+**CI管道：**
+- 未配置 - 无CI/CD文件检测（无.github/workflows、.gitlab-ci.yml等）
+- 建议：添加GitHub Actions或类似工具进行自动化测试和构建
 
-**Build Artifacts:**
-- Output: `dist/` directory
-- Contains: Bundled JavaScript, CSS, HTML ready for deployment
+**构建制品：**
+- 输出：`dist/`目录
+- 包含：捆绑的JavaScript、CSS、HTML，准备部署
 
-## Environment Configuration
+## 环境配置
 
-**Required env vars:**
-- None - application runs without environment configuration
+**必需环境变量：**
+- 无 - 应用无需环境配置运行
 
-**Optional env vars:**
-- None currently used
+**可选环境变量：**
+- 当前未使用
 
-**Secrets location:**
-- Not applicable - no secrets required
+**密钥存储：**
+- 不适用 - 无需密钥
 
-## Webhooks & Callbacks
+## Webhooks 与回调
 
-**Incoming:**
-- None - fully client-side, no server endpoints
+**入站：**
+- 无 - 完全客户端，无服务器端点
 
-**Outgoing:**
-- None - no external service calls
+**出站：**
+- 无 - 无外部服务调用
 
-## Data Flow
+## 数据流
 
-**Storage Pattern:**
+**存储模式：**
 
-1. User actions trigger Pinia store methods (e.g., `addTodo`, `addIdea`)
-2. Store updates in-memory state
-3. Store calls `persist()` action
-4. `persist()` serializes state to JSON
-5. JSON stored in localStorage
-6. On app load, `hydrate()` restores state from localStorage
+1. 用户操作触发Pinia store方法（如`addTodo`、`addIdea`）
+2. Store更新内存状态
+3. Store调用`persist()`操作
+4. `persist()`将状态序列化为JSON
+5. JSON存储在localStorage
+6. 应用加载时，`hydrate()`从localStorage恢复状态
 
-**Locations:**
-- Hydration: `src/App.vue` onMounted hook (line 31-34)
-- Todo store: `src/stores/todo.ts`
-- Idea store: `src/stores/idea.ts`
+**位置：**
+- 水合：`src/App.vue`的onMounted钩子（第31-34行）
+- 任务store：`src/stores/todo.ts`
+- 想法store：`src/stores/idea.ts`
 
-## Third-Party Dependencies Integration Points
+## 第三方依赖集成点
 
-**Component Libraries (No External API):**
-- Radix Vue - Provides unstyled component primitives only
-- lucide-vue-next - Provides SVG icon components only
-- Tailwind CSS - Processes CSS at build-time only
+**组件库（无外部API）：**
+- Radix Vue - 仅提供无样式组件基础
+- lucide-vue-next - 仅提供SVG图标组件
+- Tailwind CSS - 构建时仅处理CSS
 
-**No network requests made by any dependency.**
+**无任何依赖发起的网络请求。**
 
 ---
 
-*Integration audit: 2026-03-13*
+*集成审计完成于 2026-03-14*
