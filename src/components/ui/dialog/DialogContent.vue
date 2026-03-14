@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { DialogContent, DialogOverlay, DialogPortal, type DialogContentProps, useForwardProps } from 'radix-vue';
 import { cn } from '@/lib/utils';
+import { getDialogContentClass, getDialogOverlayClass } from './index';
 
 const props = defineProps<DialogContentProps & { class?: string }>();
 const forwarded = useForwardProps(props);
@@ -8,10 +9,10 @@ const forwarded = useForwardProps(props);
 
 <template>
   <DialogPortal>
-    <DialogOverlay class="fixed inset-0 z-50 bg-[--overlay]" />
+    <DialogOverlay :class="getDialogOverlayClass()" />
     <DialogContent
       v-bind="forwarded"
-      :class="cn('fixed left-1/2 top-1/2 z-50 w-[95vw] max-w-lg -translate-x-1/2 -translate-y-1/2 rounded-lg border border-border bg-surface-elevated p-6 shadow-lg ring-offset-surface-card', props.class)"
+      :class="cn(getDialogContentClass(), props.class)"
     >
       <slot />
     </DialogContent>
