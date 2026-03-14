@@ -2,6 +2,74 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  /* Surface 3 层 */
+  --surface-base: #f8fafc;
+  --surface-card: #ffffff;
+  --surface-elevated: #ffffff;
+
+  /* 文字 3 档 */
+  --text-foreground: #1f2937;
+  --text-muted: #6b7280;
+  --text-subtle: #9ca3af;
+
+  /* 主色 teal-500 系 */
+  --color-primary: #14b8a6;
+  --color-primary-hover: #0d9488;
+  --color-primary-muted: #ccfbf1;
+  --color-primary-fg: #ffffff;
+  --color-primary-text: #0f766e;
+
+  /* 边框 */
+  --border-default: #e2e8f0;
+  --border-focus: #14b8a6;
+
+  /* 优先级 */
+  --priority-high: #ef4444;
+  --priority-medium: #f59e0b;
+  --priority-low: #22c55e;
+
+  /* 叠加层 */
+  --overlay: rgba(15, 15, 15, 0.5);
+
+  /* shadcn 兼容别名（防止 Button ring-offset-background 失效） */
+  --background: var(--surface-card);
+}
+
+.dark {
+  /* Surface 3 层 */
+  --surface-base: #1c1917;
+  --surface-card: #292524;
+  --surface-elevated: #3c3634;
+
+  /* 文字 3 档 */
+  --text-foreground: #f5f5f4;
+  --text-muted: #a8a29e;
+  --text-subtle: #78716c;
+
+  /* 主色 teal-400 系（深色下对比度更高） */
+  --color-primary: #2dd4bf;
+  --color-primary-hover: #14b8a6;
+  --color-primary-muted: #134e4a;
+  --color-primary-fg: #042f2e;
+  --color-primary-text: #2dd4bf;
+
+  /* 边框 */
+  --border-default: #44403c;
+  --border-focus: #2dd4bf;
+
+  /* 优先级（red/amber/green 在深色背景下无需调整） */
+  --priority-high: #ef4444;
+  --priority-medium: #f59e0b;
+  --priority-low: #22c55e;
+
+  /* 叠加层 */
+  --overlay: rgba(0, 0, 0, 0.6);
+
+  /* shadcn 兼容别名 */
+  --background: var(--surface-card);
+}
+
 body {
-  @apply bg-mist text-ink;
+  @apply bg-surface-base text-foreground;
 }
