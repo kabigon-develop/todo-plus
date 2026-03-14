@@ -29,11 +29,16 @@ class MemoryStorage {
 }
 
 beforeEach(() => {
-  if (!(globalThis as any).localStorage) {
+  const currentStorage = (globalThis as any).localStorage;
+
+  if (!currentStorage || typeof currentStorage.clear !== 'function') {
     (globalThis as any).localStorage = new MemoryStorage();
   }
 });
 
 afterEach(() => {
-  localStorage.clear();
+  const storage = (globalThis as any).localStorage;
+  if (storage && typeof storage.clear === 'function') {
+    storage.clear();
+  }
 });
