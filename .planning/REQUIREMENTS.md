@@ -8,8 +8,8 @@
 ### 设计 Token 基础（Phase 1）
 
 - [x] **TOKEN-01**: 建立 CSS 自定义属性设计 Token 系统（--color-primary、--surface-*、--text-* 等语义化变量）
-- [ ] **TOKEN-02**: 扩展 tailwind.config.js 将 CSS 变量注册为 Tailwind 工具类（bg-primary、bg-surface 等）
-- [ ] **TOKEN-03**: 实现深色/浅色主题切换（index.html 防闪脚本 + ui.ts 主题状态 + 切换按钮）
+- [x] **TOKEN-02**: 扩展 tailwind.config.js 将 CSS 变量注册为 Tailwind 工具类（bg-primary、bg-surface 等）
+- [x] **TOKEN-03**: 实现深色/浅色主题切换（index.html 防闪脚本 + ui.ts 主题状态 + 切换按钮）
 - [x] **TOKEN-04**: 定义青绿色系调色板（teal-500 #14b8a6 为锚点，5 阶热力图色阶，优先级/状态颜色 token）
 
 ### 原子组件重设计（Phase 2）
@@ -64,8 +64,8 @@
 | Requirement | Phase | Status |
 |-------------|-------|--------|
 | TOKEN-01 | Phase 1 | Complete |
-| TOKEN-02 | Phase 1 | Pending |
-| TOKEN-03 | Phase 1 | Pending |
+| TOKEN-02 | Phase 1 | Complete |
+| TOKEN-03 | Phase 1 | Complete |
 | TOKEN-04 | Phase 1 | Complete |
 | COMP-01 | Phase 2 | Pending |
 | COMP-02 | Phase 2 | Pending |
