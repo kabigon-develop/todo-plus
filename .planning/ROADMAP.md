@@ -28,11 +28,11 @@
   2. 刷新页面后，应用记住用户上次选择的主题，不回退到默认值
   3. 所有颜色通过 `bg-primary`、`bg-surface`、`text-primary` 等语义化 Tailwind 类表达，代码中不再出现裸写的 `bg-white`、`text-slate-*`
   4. 青绿主色（teal-500 #14b8a6）作为按钮背景色时白色文字对比度达标；作为文字色时使用 teal-700 确保 WCAG AA 合规
-**计划**: 待定
+**计划**: 2 个计划
 
 计划：
-- [ ] 01-01: 定义 style.css Token 体系（:root 浅色 + .dark 深色 + 动画变量）
-- [ ] 01-02: 扩展 tailwind.config.js + ui.ts 主题状态 + index.html 防闪脚本
+- [ ] 01-01-PLAN.md — 在 style.css 建立完整 CSS 变量 Token 体系（浅色 + 深色）
+- [ ] 01-02-PLAN.md — 注册 Tailwind 工具类 + 主题切换基础设施 + 全局类名替换
 
 ### Phase 2: 原子组件重设计
 **目标**: 所有原子 UI 组件使用语义化 Token 表达颜色，交互态视觉一致且精致
