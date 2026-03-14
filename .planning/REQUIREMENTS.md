@@ -16,8 +16,8 @@
 
 - [ ] **COMP-01**: Button 组件 CVA variants 迁移至语义化 token（消除硬编码 slate-* 颜色）
 - [ ] **COMP-02**: Badge/Tag 组件迁移至语义化 token，支持优先级色彩变体
-- [ ] **COMP-03**: Tab 导航重设计（青绿滑动指示器动画、图标对齐、活动态样式）
-- [ ] **COMP-04**: Dialog/弹层重设计（backdrop blur、slide-up 入场动画、圆角卡片样式）
+- [x] **COMP-03**: Tab 导航重设计（青绿滑动指示器动画、图标对齐、活动态样式）
+- [x] **COMP-04**: Dialog/弹层重设计（backdrop blur、slide-up 入场动画、圆角卡片样式）
 - [ ] **COMP-05**: 输入框/表单组件重设计（聚焦态青绿边框、错误态样式、一致间距）
 
 ### 页面级重设计（Phase 3）
@@ -69,8 +69,8 @@
 | TOKEN-04 | Phase 1 | Complete |
 | COMP-01 | Phase 2 | Pending |
 | COMP-02 | Phase 2 | Pending |
-| COMP-03 | Phase 2 | Pending |
-| COMP-04 | Phase 2 | Pending |
+| COMP-03 | Phase 2 | Complete |
+| COMP-04 | Phase 2 | Complete |
 | COMP-05 | Phase 2 | Pending |
 | PAGE-01 | Phase 3 | Pending |
 | PAGE-02 | Phase 3 | Pending |

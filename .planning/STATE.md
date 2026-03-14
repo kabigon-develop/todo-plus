@@ -5,33 +5,34 @@
 参见：.planning/PROJECT.md（更新于 2026-03-14）
 
 **核心价值：** 在不改动任何业务逻辑和数据层的前提下，让每一位用户打开应用的第一眼就感受到精致与专业
-**当前焦点：** 阶段 1 — Token 基础
+**当前焦点：** 阶段 2 — 原子组件重设计
 
 ## 当前位置
 
-阶段：1 / 4（Token 基础）✅ 已完成
-计划：2 / 2（已全部完成，人工验证通过）
-状态：阶段完成，准备进入阶段 2
-最后活动：2026-03-14 — Phase 1 全部计划执行完毕，人工验证通过
+阶段：2 / 4（原子组件重设计）进行中
+计划：2 / 3（已完成 02-01、02-02）
+状态：阶段进行中，等待 02-03 人工视觉验证
+最后活动：2026-03-14 — 完成 02-02 Tab 指示器与 Dialog 底部滑入动效实现
 
-进度：[███░░░░░░░] 25%
+进度：[█████░░░░░] 50%
 
 ## 性能指标
 
 **速度：**
-- 已完成计划总数：1（01-01，待 01-02 人工验证后为 2）
-- 平均耗时：约 9 分钟（01-02 执行部分）
-- 总执行时长：约 18 分钟（01-01 + 01-02）
+- 已完成计划总数：4（01-01、01-02、02-01、02-02）
+- 平均耗时：约 8 分钟
+- 总执行时长：约 33 分钟（Phase 1 + Phase 2 已完成计划）
 
 **按阶段统计：**
 
 | 阶段 | 计划数 | 总耗时 | 均耗/计划 |
 |------|--------|--------|----------|
 | 01-token | 2 | ~18min | ~9min |
+| 02-components | 2 | ~15min | ~7.5min |
 
 **近期趋势：**
-- 最近 5 个计划：01-01（CSS Token）、01-02（Tailwind 注册 + 全局替换）
-- 趋势：顺利，无 Rule 4 架构级阻断
+- 最近 5 个计划：01-01（CSS Token）、01-02（Tailwind 注册 + 全局替换）、02-01（原子组件 token 迁移）、02-02（Tab/Dialog 动效）
+- 趋势：顺利，只有 1 个 Rule 3 测试环境阻塞已自动修复
 
 *每完成一个计划后更新*
 
@@ -51,10 +52,13 @@
 - 01-02 执行：Badge 状态变体（warning/success/destructive/info）保留 Tailwind 原色至阶段 2 COMP-02
 - 01-02 执行：Button default variant 过渡为 bg-foreground（阶段 2 再迁移至 bg-primary）
 - 01-02 执行：hydrateTheme() 读取 DOM classList 而非 localStorage，避免与 FOUT 脚本状态不一致
+- 02-02 执行：TabsTrigger 与 Dialog 导出类名 helper，便于在 node 环境做 class-string 回归测试
+- 02-02 执行：Dialog 动效直接复用 tailwindcss-animate 的 data-state 类，无需自定义 keyframes
+- 02-02 执行：tests/setup.ts 对 localStorage.clear 做防御式兜底，保证 Vitest teardown 稳定
 
 ### 待处理事项
 
-暂无。
+- 02-03 需要进行浅色/深色主题下的人工视觉验证。
 
 ### 阻塞项/关注点
 
@@ -65,5 +69,5 @@
 ## 会话连续性
 
 最后会话：2026-03-14
-停止于：完成 01-token-02 Task 1+2，等待 Task 3 人工验证主题切换
-恢复文件：.planning/phases/01-token/01-02-SUMMARY.md
+停止于：完成 02-yuan-zi-zu-jian-zhong-she-ji-02-02-PLAN.md
+恢复文件：.planning/phases/02-yuan-zi-zu-jian-zhong-she-ji/02-02-SUMMARY.md
