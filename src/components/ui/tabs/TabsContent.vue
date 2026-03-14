@@ -9,7 +9,7 @@ const forwarded = useForwardProps(props);
 <template>
   <TabsContent
     v-bind="forwarded"
-    :class="cn('mt-4 ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-2', props.class)"
+    :class="cn('mt-4 ring-offset-surface-card focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-border-focus focus-visible:ring-offset-2', props.class)"
   >
     <slot />
   </TabsContent>

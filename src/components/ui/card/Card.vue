@@ -7,7 +7,7 @@ defineProps<{ class?: HTMLAttributes['class'] }>();
 
 <template>
   <div
-    :class="cn('rounded-xl border border-slate-200 bg-white text-slate-950 shadow-sm', $props.class)"
+    :class="cn('rounded-xl border border-border bg-surface-card text-foreground shadow-sm', $props.class)"
   >
     <slot />
   </div>

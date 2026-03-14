@@ -38,7 +38,7 @@ const emit = defineEmits<{ 'update:modelValue': [value: string] }>();
     <SelectTrigger
       :class="
         cn(
-          'flex h-10 w-full items-center justify-between rounded-md border border-slate-300 bg-white px-3 py-2 text-sm ring-offset-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50',
+          'flex h-10 w-full items-center justify-between rounded-md border border-border bg-surface-card px-3 py-2 text-sm text-foreground ring-offset-surface-card placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-border-focus focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50',
           props.class
         )
       "
@@ -49,14 +49,14 @@ const emit = defineEmits<{ 'update:modelValue': [value: string] }>();
 
     <SelectPortal>
       <SelectContent
-        class="relative z-50 min-w-[8rem] overflow-hidden rounded-md border border-slate-200 bg-white text-slate-950 shadow-md"
+        class="relative z-50 min-w-[8rem] overflow-hidden rounded-md border border-border bg-surface-card text-foreground shadow-md"
       >
         <SelectViewport class="p-1">
           <SelectItem
             v-for="option in props.options"
             :key="option.value"
             :value="option.value"
-            class="relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none focus:bg-slate-100"
+            class="relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none focus:bg-surface-base"
           >
             <span class="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
               <SelectItemIndicator>

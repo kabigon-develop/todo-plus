@@ -7,7 +7,7 @@ const forwarded = useForwardProps(props);
 </script>
 
 <template>
-  <DialogDescription v-bind="forwarded" :class="cn('text-sm text-slate-500', props.class)">
+  <DialogDescription v-bind="forwarded" :class="cn('text-sm text-muted', props.class)">
     <slot />
   </DialogDescription>
 </template>
