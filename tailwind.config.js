@@ -1,4 +1,5 @@
 import forms from '@tailwindcss/forms';
+import animate from 'tailwindcss-animate';
 
 /** @type {import('tailwindcss').Config} */
 export default {
@@ -34,5 +35,5 @@ export default {
       }
     }
   },
-  plugins: [forms]
+  plugins: [forms, animate]
 };
