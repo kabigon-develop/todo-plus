@@ -34,6 +34,14 @@
 
   /* shadcn 兼容别名（防止 Button ring-offset-background 失效） */
   --background: var(--surface-card);
+
+  /* Priority soft-bg tokens（COMP-02） */
+  --priority-high-bg:    rgba(239, 68, 68, 0.12);
+  --priority-high-text:  #dc2626;
+  --priority-medium-bg:  rgba(245, 158, 11, 0.12);
+  --priority-medium-text: #d97706;
+  --priority-low-bg:     rgba(34, 197, 94, 0.12);
+  --priority-low-text:   #16a34a;
 }
 
 .dark {
@@ -68,6 +76,14 @@
 
   /* shadcn 兼容别名 */
   --background: var(--surface-card);
+
+  /* Priority soft-bg tokens（深色模式，COMP-02） */
+  --priority-high-bg:    rgba(239, 68, 68, 0.18);
+  --priority-high-text:  #f87171;
+  --priority-medium-bg:  rgba(245, 158, 11, 0.18);
+  --priority-medium-text: #fbbf24;
+  --priority-low-bg:     rgba(34, 197, 94, 0.18);
+  --priority-low-text:   #4ade80;
 }
 
 body {

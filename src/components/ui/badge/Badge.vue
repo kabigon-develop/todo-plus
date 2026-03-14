@@ -9,11 +9,14 @@ const badgeVariants = cva(
     variants: {
       variant: {
         default: 'border-transparent bg-foreground text-surface-base',
-        success: 'border-transparent bg-emerald-100 text-emerald-700', /* 阶段 2 COMP-02 迁移至 priority token */
-        warning: 'border-transparent bg-amber-100 text-amber-700', /* 阶段 2 COMP-02 迁移至 priority token */
-        destructive: 'border-transparent bg-red-100 text-red-700', /* 阶段 2 COMP-02 迁移至 priority token */
-        info: 'border-transparent bg-sky-100 text-sky-700', /* 阶段 2 COMP-02 迁移至 priority token */
-        secondary: 'border-transparent bg-surface-base text-foreground'
+        success: 'border-transparent bg-[--priority-low-bg] text-[--priority-low-text]',
+        warning: 'border-transparent bg-[--priority-medium-bg] text-[--priority-medium-text]',
+        destructive: 'border-transparent bg-[--priority-high-bg] text-[--priority-high-text]',
+        info: 'border-transparent bg-primary-muted text-primary-text',
+        secondary: 'border-transparent bg-surface-base text-foreground',
+        high: 'border-transparent bg-[--priority-high-bg] text-[--priority-high-text]',
+        medium: 'border-transparent bg-[--priority-medium-bg] text-[--priority-medium-text]',
+        low: 'border-transparent bg-[--priority-low-bg] text-[--priority-low-text]'
       }
     },
     defaultVariants: {

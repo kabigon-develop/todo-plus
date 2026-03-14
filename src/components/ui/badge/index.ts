@@ -6,15 +6,14 @@ export const badgeVariants = cva(
     variants: {
       variant: {
         default: 'border-transparent bg-foreground text-surface-base',
-        success: 'border-transparent bg-emerald-100 text-emerald-700',
-        warning: 'border-transparent bg-amber-100 text-amber-700',
-        destructive: 'border-transparent bg-red-100 text-red-700',
-        info: 'border-transparent bg-sky-100 text-sky-700',
+        success: 'border-transparent bg-[--priority-low-bg] text-[--priority-low-text]',
+        warning: 'border-transparent bg-[--priority-medium-bg] text-[--priority-medium-text]',
+        destructive: 'border-transparent bg-[--priority-high-bg] text-[--priority-high-text]',
+        info: 'border-transparent bg-primary-muted text-primary-text',
         secondary: 'border-transparent bg-surface-base text-foreground',
-        // priority variants — placeholder, will be implemented in Task 2
-        high: 'border-transparent bg-red-100 text-red-700',
-        medium: 'border-transparent bg-amber-100 text-amber-700',
-        low: 'border-transparent bg-emerald-100 text-emerald-700'
+        high: 'border-transparent bg-[--priority-high-bg] text-[--priority-high-text]',
+        medium: 'border-transparent bg-[--priority-medium-bg] text-[--priority-medium-text]',
+        low: 'border-transparent bg-[--priority-low-bg] text-[--priority-low-text]'
       }
     },
     defaultVariants: {
