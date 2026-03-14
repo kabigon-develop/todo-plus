@@ -1,13 +1,37 @@
-// @vitest-environment jsdom
+// Tests run in node environment (matching project convention)
+// document.documentElement is mocked below for classList tests
 import { describe, it, expect, beforeEach } from 'vitest';
 import { setActivePinia, createPinia } from 'pinia';
 import { useUiStore } from '../../src/stores/ui';
 
+// Minimal classList mock for node environment
+function makeClassList() {
+  const classes = new Set<string>();
+  return {
+    add: (cls: string) => classes.add(cls),
+    remove: (cls: string) => classes.delete(cls),
+    contains: (cls: string) => classes.has(cls),
+    toggle: (cls: string, force?: boolean) => {
+      if (force === true) classes.add(cls);
+      else if (force === false) classes.delete(cls);
+      else if (classes.has(cls)) classes.delete(cls);
+      else classes.add(cls);
+      return classes.has(cls);
+    }
+  };
+}
+
 describe('useUiStore - theme', () => {
+  let mockClassList: ReturnType<typeof makeClassList>;
+
   beforeEach(() => {
     setActivePinia(createPinia());
-    document.documentElement.classList.remove('dark');
     localStorage.clear();
+    mockClassList = makeClassList();
+    // Patch globalThis.document for the store
+    (globalThis as any).document = {
+      documentElement: { classList: mockClassList }
+    };
   });
 
   it('初始 theme 为 light', () => {
@@ -34,18 +58,18 @@ describe('useUiStore - theme', () => {
   it('toggleTheme 更新 html classList', () => {
     const store = useUiStore();
     store.toggleTheme();
-    expect(document.documentElement.classList.contains('dark')).toBe(true);
+    expect(mockClassList.contains('dark')).toBe(true);
     store.toggleTheme();
-    expect(document.documentElement.classList.contains('dark')).toBe(false);
+    expect(mockClassList.contains('dark')).toBe(false);
   });
 
   it('hydrateTheme 从 classList 读取 dark 状态', () => {
     const store = useUiStore();
-    document.documentElement.classList.add('dark');
+    mockClassList.add('dark');
     store.hydrateTheme();
     expect(store.theme).toBe('dark');
 
-    document.documentElement.classList.remove('dark');
+    mockClassList.remove('dark');
     store.hydrateTheme();
     expect(store.theme).toBe('light');
   });
@@ -53,13 +77,13 @@ describe('useUiStore - theme', () => {
   it('hydrateTheme 不修改 classList', () => {
     const store = useUiStore();
     // 当 html 有 dark class 时，hydrateTheme 不应修改它
-    document.documentElement.classList.add('dark');
+    mockClassList.add('dark');
     store.hydrateTheme();
-    expect(document.documentElement.classList.contains('dark')).toBe(true);
+    expect(mockClassList.contains('dark')).toBe(true);
 
     // 当 html 无 dark class 时，hydrateTheme 不应添加它
-    document.documentElement.classList.remove('dark');
+    mockClassList.remove('dark');
     store.hydrateTheme();
-    expect(document.documentElement.classList.contains('dark')).toBe(false);
+    expect(mockClassList.contains('dark')).toBe(false);
   });
 });
