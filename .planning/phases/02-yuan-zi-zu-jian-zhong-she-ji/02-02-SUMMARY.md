@@ -59,6 +59,7 @@ completed: 2026-03-14
 - Replaced the active tab pill treatment with a teal underline pseudo-element and emphasized active label styling.
 - Converted Dialog overlay/content styling to blur + bottom-sheet slide animations using tailwindcss-animate state classes.
 - Added dedicated COMP-03 and COMP-04 regression tests and kept the full Vitest suite green.
+- Applied a review-driven follow-up fix so the Dialog open animation now explicitly includes `data-[state=open]:ease-out` to match the 200ms ease-out intent.
 
 ## Task Commits
 
@@ -86,6 +87,11 @@ Each task was committed atomically:
 - Kept `TabsList.vue` unchanged exactly as planned; only the trigger active treatment changed.
 
 ## Deviations from Plan
+
+### Review-Driven Follow-Up
+- Post-plan code review found that tailwindcss-animate does not add easing automatically, so the Dialog open animation needed an explicit `data-[state=open]:ease-out` class.
+- Added one focused regression assertion in `tests/components/dialog.test.ts` and updated `getDialogContentClass()` with the minimal class change.
+- Verification: `npx vitest run tests/components/dialog.test.ts`, `npx vitest run`
 
 ### Auto-fixed Issues
 

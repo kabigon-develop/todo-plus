@@ -17,6 +17,11 @@ describe('COMP-04: dialog class helpers', () => {
     expect(classes).toContain('slide-in-from-bottom');
   });
 
+  it('content open animation contains ease-out', () => {
+    const classes = getDialogContentClass();
+    expect(classes).toContain('data-[state=open]:ease-out');
+  });
+
   it('content contains slide-out-to-bottom', () => {
     const classes = getDialogContentClass();
     expect(classes).toContain('slide-out-to-bottom');
