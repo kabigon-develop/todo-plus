@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { DialogContent, DialogOverlay, DialogPortal, type DialogContentProps, useForwardProps } from 'radix-vue';
-import { cn } from '@/lib/utils';
+import { cn } from '@/utils';
 import { getDialogContentClass, getDialogOverlayClass } from './index';
 
 const props = defineProps<DialogContentProps & { class?: string }>();

@@ -7,7 +7,7 @@ import {
   type CheckboxRootProps,
   useForwardPropsEmits
 } from 'radix-vue';
-import { cn } from '@/lib/utils';
+import { cn } from '@/utils';
 
 const props = defineProps<CheckboxRootProps & { class?: string }>();
 const emits = defineEmits<CheckboxRootEmits>();

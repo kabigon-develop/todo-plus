@@ -12,6 +12,7 @@ export default defineConfig({
   test: {
     environment: 'node',
     globals: true,
-    setupFiles: './tests/setup.ts'
+    setupFiles: './tests/setup.ts',
+    exclude: ['node_modules/**', 'dist/**', '.claude/**']
   }
 });

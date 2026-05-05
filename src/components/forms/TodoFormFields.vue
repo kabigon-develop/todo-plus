@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Input } from '@/components/ui/input';
 import { Select } from '@/components/ui/select';
-import type { Priority } from '@/stores/types';
+import type { Priority } from '@/types/todo';
 
 defineProps<{
   form: {

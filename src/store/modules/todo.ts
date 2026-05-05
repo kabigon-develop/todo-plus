@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import type { Priority, Todo, TodoFilter } from './types';
+import type { Priority, Todo, TodoFilter } from '@/types/todo';
 
 const STORAGE_KEY = 'todo-plus:todos';
 

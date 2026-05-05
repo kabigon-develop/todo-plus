@@ -1,9 +1,9 @@
 ---
 phase: 2
 slug: yuan-zi-zu-jian-zhong-she-ji
-status: draft
-nyquist_compliant: false
-wave_0_complete: false
+status: approved
+nyquist_compliant: true
+wave_0_complete: true
 created: 2026-03-14
 ---
 
@@ -40,12 +40,12 @@ created: 2026-03-14
 
 | Task ID | Plan | Wave | Requirement | Test Type | Automated Command | File Exists | Status |
 |---------|------|------|-------------|-----------|-------------------|-------------|--------|
-| 02-01-W0 | 01 | W0 | COMP-01~05 | setup | `npx vitest run` | ❌ W0 | ⬜ pending |
-| 02-01-01 | 01 | 1 | COMP-01 | unit（CVA 类名） | `npx vitest run tests/components/button.test.ts` | ❌ W0 | ⬜ pending |
-| 02-01-02 | 01 | 1 | COMP-02 | unit（CVA 类名） | `npx vitest run tests/components/badge.test.ts` | ❌ W0 | ⬜ pending |
-| 02-01-03 | 01 | 1 | COMP-05 | unit（CVA 类名） | `npx vitest run tests/components/input.test.ts` | ❌ W0 | ⬜ pending |
-| 02-02-01 | 02 | 2 | COMP-03 | unit（CVA 类名） | `npx vitest run tests/components/tabs.test.ts` | ❌ W0 | ⬜ pending |
-| 02-02-02 | 02 | 2 | COMP-04 | unit（CVA 类名） | `npx vitest run tests/components/dialog.test.ts` | ❌ W0 | ⬜ pending |
+| 02-01-W0 | 01 | W0 | COMP-01~05 | setup | `npx vitest run` | ✅ complete | ✅ green |
+| 02-01-01 | 01 | 1 | COMP-01 | unit（CVA 类名） | `npx vitest run tests/components/button.test.ts` | ✅ file exists | ✅ green |
+| 02-01-02 | 01 | 1 | COMP-02 | unit（CVA 类名） | `npx vitest run tests/components/badge.test.ts` | ✅ file exists | ✅ green |
+| 02-01-03 | 01 | 1 | COMP-05 | unit（CVA 类名） | `npx vitest run tests/components/input.test.ts` | ✅ file exists | ✅ green |
+| 02-02-01 | 02 | 2 | COMP-03 | unit（CVA 类名） | `npx vitest run tests/components/tabs.test.ts` | ✅ file exists | ✅ green |
+| 02-02-02 | 02 | 2 | COMP-04 | unit（CVA 类名） | `npx vitest run tests/components/dialog.test.ts` | ✅ file exists | ✅ green |
 
 *Status: ⬜ pending · ✅ green · ❌ red · ⚠️ flaky*
 
@@ -53,13 +53,13 @@ created: 2026-03-14
 
 ## Wave 0 Requirements
 
-- [ ] `tests/components/button.test.ts` — COMP-01 Button variant 类名断言（需先提取 CVA 函数）
-- [ ] `tests/components/badge.test.ts` — COMP-02 Badge priority 变体断言
-- [ ] `tests/components/tabs.test.ts` — COMP-03 TabsTrigger active 类名断言
-- [ ] `tests/components/dialog.test.ts` — COMP-04 Dialog 动效类名断言
-- [ ] `tests/components/input.test.ts` — COMP-05 Input focus/error 类名断言
-- [ ] 各组件 CVA 函数提取为独立模块（如 `Button.vue` → 同目录 `index.ts` 导出 `buttonVariants`）
-- [ ] `tailwind.config.js` 补充 `require('tailwindcss-animate')` 插件注册
+- [x] `tests/components/button.test.ts` — COMP-01 Button variant 类名断言（已建立）
+- [x] `tests/components/badge.test.ts` — COMP-02 Badge priority 变体断言
+- [x] `tests/components/tabs.test.ts` — COMP-03 TabsTrigger active 类名断言
+- [x] `tests/components/dialog.test.ts` — COMP-04 Dialog 动效类名断言
+- [x] `tests/components/input.test.ts` — COMP-05 Input focus/error 类名断言
+- [x] 各组件类名/CVA 函数已提取为独立模块（`button` / `badge` / `input` / `tabs` / `dialog` index.ts）
+- [x] `tailwind.config.js` 已注册 `require('tailwindcss-animate')` 插件
 
 ---
 
@@ -75,11 +75,11 @@ created: 2026-03-14
 
 ## Validation Sign-Off
 
-- [ ] All tasks have `<automated>` verify or Wave 0 dependencies
-- [ ] Sampling continuity: no 3 consecutive tasks without automated verify
-- [ ] Wave 0 covers all MISSING references
-- [ ] No watch-mode flags
-- [ ] Feedback latency < 10s
-- [ ] `nyquist_compliant: true` set in frontmatter
+- [x] All tasks have `<automated>` verify or Wave 0 dependencies
+- [x] Sampling continuity: no 3 consecutive tasks without automated verify
+- [x] Wave 0 covers all MISSING references
+- [x] No watch-mode flags
+- [x] Feedback latency < 10s
+- [x] `nyquist_compliant: true` set in frontmatter
 
-**Approval:** pending
+**Approval:** approved (automated verification green + user visual approval in 02-03)

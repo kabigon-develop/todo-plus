@@ -16,11 +16,11 @@ import {
   buildMonthlyDashboard,
   getDailyMetricMax,
   shiftMonth
-} from '@/lib/dashboard';
-import { useIdeaStore } from '@/stores/idea';
-import { useTodoStore } from '@/stores/todo';
-import type { Idea, IdeaStatus, Priority, Todo, TodoFilter } from '@/stores/types';
-import { useUiStore, type MainTab } from '@/stores/ui';
+} from '@/utils/dashboard';
+import { useIdeaStore } from '@/store/modules/idea';
+import { useTodoStore } from '@/store/modules/todo';
+import type { Idea, IdeaStatus, Priority, Todo, TodoFilter } from '@/types/todo';
+import { useUiStore, type MainTab } from '@/store/modules/ui';
 
 type DialogType = 'todo-create' | 'todo-edit' | 'idea-create' | 'idea-edit' | null;
 
@@ -332,21 +332,24 @@ const goNextMonth = () => {
           <Button @click="openTodoCreate">新增任务</Button>
         </div>
 
-        <Card class="grid gap-3 p-4 md:grid-cols-6">
+        <section class="todo-toolbar-v2" aria-label="任务筛选工具">
           <Input
-            class="md:col-span-3"
+            class="todo-toolbar-v2__search"
             :model-value="todoStore.search"
-            placeholder="搜索任务标题或描述"
+            placeholder="输入关键词筛选任务"
             @update:model-value="todoStore.setSearch($event)"
           />
-          <Select
-            :model-value="todoStore.filter"
-            :options="filterOptions"
-            @update:model-value="todoStore.setFilter($event as TodoFilter)"
-          />
-          <Button :disabled="!hasSelected" @click="todoStore.bulkCompleteSelected">批量完成</Button>
-          <Button variant="destructive" :disabled="!hasSelected" @click="todoStore.bulkDeleteSelected">批量删除</Button>
-        </Card>
+          <div class="todo-toolbar-v2__chips" role="group" aria-label="任务状态筛选">
+            <button type="button" :aria-pressed="todoStore.filter === 'all'" @click="todoStore.setFilter('all')">全部</button>
+            <button type="button" :aria-pressed="todoStore.filter === 'active'" @click="todoStore.setFilter('active')">进行中</button>
+            <button type="button" :aria-pressed="todoStore.filter === 'completed'" @click="todoStore.setFilter('completed')">已完成</button>
+          </div>
+          <div class="todo-toolbar-v2__batch">
+            <span>{{ todoStore.selectedIds.length }} 已选</span>
+            <Button size="sm" :disabled="!hasSelected" @click="todoStore.bulkCompleteSelected">完成</Button>
+            <Button size="sm" variant="destructive" :disabled="!hasSelected" @click="todoStore.bulkDeleteSelected">删除</Button>
+          </div>
+        </section>
 
         <ul class="space-y-2">
           <li v-for="item in todoStore.filteredTodos" :key="item.id">
@@ -598,3 +601,68 @@ const goNextMonth = () => {
     </FormDialog>
   </main>
 </template>
+
+<style scoped>
+.todo-toolbar-v2 {
+  display: grid;
+  grid-template-columns: minmax(18rem, 1fr) auto minmax(13rem, auto);
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  border: 1px solid color-mix(in oklch, var(--border-default) 60%, var(--color-primary));
+  border-radius: 0.875rem;
+  background:
+    linear-gradient(180deg, color-mix(in oklch, var(--surface-card) 94%, var(--color-primary)) 0%, var(--surface-card) 100%);
+  box-shadow:
+    inset 0 0 0 1px color-mix(in oklch, var(--surface-elevated) 72%, transparent),
+    0 10px 24px rgba(0, 0, 0, 0.14);
+}
+
+.todo-toolbar-v2__chips {
+  display: inline-flex;
+  gap: 0.25rem;
+  padding: 0.25rem;
+  border: 1px solid var(--border-default);
+  border-radius: 999px;
+  background: color-mix(in oklch, var(--surface-base) 88%, var(--surface-elevated));
+}
+
+.todo-toolbar-v2__chips button {
+  min-width: 4.25rem;
+  border-radius: 999px;
+  padding: 0.45rem 0.75rem;
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  transition:
+    background-color 180ms cubic-bezier(0.22, 1, 0.36, 1),
+    color 180ms cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 180ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.todo-toolbar-v2__chips button[aria-pressed='true'] {
+  background: var(--color-primary-muted);
+  color: var(--color-primary-text);
+  font-weight: 700;
+  box-shadow: inset 0 0 0 1px color-mix(in oklch, var(--color-primary) 55%, transparent);
+}
+
+.todo-toolbar-v2__batch {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  color: var(--text-muted);
+  font-size: 0.8125rem;
+}
+
+@media (max-width: 900px) {
+  .todo-toolbar-v2 {
+    grid-template-columns: 1fr;
+  }
+
+  .todo-toolbar-v2__chips,
+  .todo-toolbar-v2__batch {
+    width: 100%;
+  }
+}
+</style>
