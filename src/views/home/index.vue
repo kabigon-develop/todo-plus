@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref } from 'vue';
-import { Minus, Moon, Plus, Sun } from 'lucide-vue-next';
+import { ClipboardList, LayoutDashboard, Lightbulb, Minus, Moon, Plus, Search, Sun } from 'lucide-vue-next';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -14,6 +14,7 @@ import IdeaFormFields from '@/components/forms/IdeaFormFields.vue';
 import {
   buildCalendarWeeks,
   buildMonthlyDashboard,
+  type DashboardDailyRow,
   getDailyMetricMax,
   shiftMonth
 } from '@/utils/dashboard';
@@ -52,6 +53,8 @@ const ideaForm = reactive({
 const todoErrors = reactive({ title: '' });
 const ideaErrors = reactive({ title: '' });
 
+const todoComposerOpen = ref(false);
+const ideaComposerOpen = ref(false);
 const dialogOpen = ref(false);
 const dialogType = ref<DialogType>(null);
 const editingTodoId = ref<string | null>(null);
@@ -104,11 +107,11 @@ const closeDialog = () => {
 
 const openTodoCreate = () => {
   resetTodoForm();
-  dialogType.value = 'todo-create';
-  dialogOpen.value = true;
+  todoComposerOpen.value = true;
 };
 
 const openTodoEdit = (item: Todo) => {
+  todoComposerOpen.value = false;
   resetTodoForm();
   editingTodoId.value = item.id;
   todoForm.title = item.title;
@@ -120,13 +123,18 @@ const openTodoEdit = (item: Todo) => {
   dialogOpen.value = true;
 };
 
+const cancelTodoCreate = () => {
+  todoComposerOpen.value = false;
+  resetTodoForm();
+};
+
 const openIdeaCreate = () => {
   resetIdeaForm();
-  dialogType.value = 'idea-create';
-  dialogOpen.value = true;
+  ideaComposerOpen.value = true;
 };
 
 const openIdeaEdit = (item: Idea) => {
+  ideaComposerOpen.value = false;
   resetIdeaForm();
   editingIdeaId.value = item.id;
   ideaForm.title = item.title;
@@ -135,6 +143,11 @@ const openIdeaEdit = (item: Idea) => {
   ideaForm.tags = item.tags.join(', ');
   dialogType.value = 'idea-edit';
   dialogOpen.value = true;
+};
+
+const cancelIdeaCreate = () => {
+  ideaComposerOpen.value = false;
+  resetIdeaForm();
 };
 
 const validateTodoForm = () => {
@@ -166,9 +179,13 @@ const submitTodoForm = () => {
     tags: splitTags(todoForm.tags)
   };
 
-  if (dialogType.value === 'todo-create') {
+  if (todoComposerOpen.value || dialogType.value === 'todo-create') {
     todoStore.addTodo(payload);
-    closeDialog();
+    if (todoComposerOpen.value) {
+      cancelTodoCreate();
+    } else {
+      closeDialog();
+    }
     return;
   }
 
@@ -188,9 +205,13 @@ const submitIdeaForm = () => {
     tags: splitTags(ideaForm.tags)
   };
 
-  if (dialogType.value === 'idea-create') {
+  if (ideaComposerOpen.value || dialogType.value === 'idea-create') {
     ideaStore.addIdea(payload);
-    closeDialog();
+    if (ideaComposerOpen.value) {
+      cancelIdeaCreate();
+    } else {
+      closeDialog();
+    }
     return;
   }
 
@@ -243,6 +264,29 @@ const convertIdea = (id: string) => {
 
 const statuses: IdeaStatus[] = ['idea', 'evaluate', 'execute'];
 
+const clearTodoFilters = () => {
+  todoStore.setSearch('');
+  todoStore.setFilter('all');
+};
+
+const todoEmptyTitle = computed(() =>
+  todoStore.search.trim() || todoStore.filter !== 'all'
+    ? '没有匹配的任务'
+    : '先把下一件事写下来'
+);
+
+const todoEmptyDescription = computed(() =>
+  todoStore.search.trim() || todoStore.filter !== 'all'
+    ? '换个关键词，或清空筛选后再看全部任务。'
+    : '任务会按优先级、截止日期和标签集中在这里，适合快速捕捉和日常收尾。'
+);
+
+const laneEmptyDescription = (status: IdeaStatus) => {
+  if (status === 'idea') return '记录还没成形的念头，后面再评估。';
+  if (status === 'evaluate') return '把值得继续看的想法拖到这里。';
+  return '准备落地的想法会在这里转成任务。';
+};
+
 const dialogTitle = computed(() => {
   if (dialogType.value === 'todo-create') return '新增任务';
   if (dialogType.value === 'todo-edit') return '编辑任务';
@@ -261,6 +305,24 @@ const dashboardData = computed(() =>
 const calendarWeeks = computed(() =>
   buildCalendarWeeks(dashboardData.value.dailyRows, dashboardCursor.value)
 );
+
+const dailyActivityTotal = (row: DashboardDailyRow) =>
+  row.todoCreated + row.todoUpdated + row.ideaCreated + row.ideaUpdated;
+
+const activeDashboardDays = computed(() =>
+  dashboardData.value.dailyRows.filter((row) => dailyActivityTotal(row) > 0)
+);
+
+const dashboardActivityTotal = computed(() =>
+  dashboardData.value.dailyRows.reduce((total, row) => total + dailyActivityTotal(row), 0)
+);
+
+const dashboardSummaryText = computed(() => {
+  if (dashboardActivityTotal.value === 0) {
+    return '本月还没有活动记录';
+  }
+  return `${activeDashboardDays.value.length} 天有记录，共 ${dashboardActivityTotal.value} 次变动`;
+});
 
 const dashboardMonthText = computed(() => {
   const monthKey = dashboardData.value.monthKey;
@@ -281,6 +343,29 @@ const barColorClass = {
   ideaUpdated: 'bg-orange-600'
 };
 
+const dashboardMetrics = computed(() => [
+  {
+    label: '任务新增',
+    value: dashboardData.value.monthlyTotals.todoCreated,
+    colorClass: barColorClass.todoCreated
+  },
+  {
+    label: '任务活跃',
+    value: dashboardData.value.monthlyTotals.todoUpdated,
+    colorClass: barColorClass.todoUpdated
+  },
+  {
+    label: '想法新增',
+    value: dashboardData.value.monthlyTotals.ideaCreated,
+    colorClass: barColorClass.ideaCreated
+  },
+  {
+    label: '想法活跃',
+    value: dashboardData.value.monthlyTotals.ideaUpdated,
+    colorClass: barColorClass.ideaUpdated
+  }
+]);
+
 const miniBarHeight = (value: number) =>
   value > 0
     ? `${Math.max((value / dailyMetricMax.value) * 100, 12)}%`
@@ -297,16 +382,15 @@ const goNextMonth = () => {
 
 <template>
   <main class="mx-auto min-h-screen max-w-6xl space-y-6 px-4 py-6">
-    <!-- header: gradient retained as visual design feature, phase 3 PAGE-01 will redesign -->
-    <header class="rounded-2xl bg-gradient-to-r from-slate-900 to-slate-700 px-6 py-5 text-white shadow">
+    <header class="rounded-2xl border border-border bg-surface-elevated px-5 py-4 text-foreground shadow-sm">
       <div class="flex items-center justify-between">
         <div>
           <h1 class="text-2xl font-bold">Todo Plus</h1>
-          <p class="mt-1 text-sm text-white/70">任务与想法管理</p>
+          <p class="mt-1 text-sm text-muted">任务与想法管理</p>
         </div>
         <button
           type="button"
-          class="flex h-9 w-9 items-center justify-center rounded-full border border-border bg-surface-card text-foreground shadow-sm transition hover:bg-surface-base"
+          class="flex h-11 w-11 items-center justify-center rounded-full border border-border bg-surface-card text-foreground shadow-sm transition hover:bg-surface-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-border-focus focus-visible:ring-offset-2 focus-visible:ring-offset-surface-card"
           :title="uiStore.theme === 'dark' ? '切换到浅色' : '切换到深色'"
           @click="uiStore.toggleTheme()"
         >
@@ -328,8 +412,34 @@ const goNextMonth = () => {
       </TabsList>
 
       <TabsContent value="todo" class="space-y-4">
-        <div class="flex justify-end">
-          <Button @click="openTodoCreate">新增任务</Button>
+        <section
+          v-if="todoComposerOpen"
+          class="rounded-xl border border-border bg-surface-card p-4 shadow-sm"
+          aria-label="快速新增任务"
+        >
+          <form class="space-y-3" @submit.prevent="submitTodoForm">
+            <div class="flex items-start justify-between gap-3">
+              <div>
+                <p class="text-sm font-semibold">快速新增任务</p>
+                <p class="text-sm text-muted">先捕捉标题，需要时再补优先级、截止日期和标签。</p>
+              </div>
+              <Button type="button" variant="secondary" size="sm" @click="cancelTodoCreate">取消</Button>
+            </div>
+            <TodoFormFields
+              :form="todoForm"
+              :title-error="todoErrors.title"
+              :priority-options="priorityOptions"
+            />
+            <div class="flex justify-end">
+              <Button type="submit">保存任务</Button>
+            </div>
+          </form>
+        </section>
+        <div v-else class="flex justify-end">
+          <Button class="gap-2" @click="openTodoCreate">
+            <Plus class="h-4 w-4" />
+            新增任务
+          </Button>
         </div>
 
         <section class="todo-toolbar-v2" aria-label="任务筛选工具">
@@ -351,7 +461,35 @@ const goNextMonth = () => {
           </div>
         </section>
 
-        <ul class="space-y-2">
+        <Card v-if="!todoComposerOpen && todoStore.filteredTodos.length === 0" class="p-5">
+          <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div class="flex gap-3">
+              <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary-muted text-primary-text">
+                <Search v-if="todoStore.search.trim() || todoStore.filter !== 'all'" class="h-5 w-5" />
+                <ClipboardList v-else class="h-5 w-5" />
+              </div>
+              <div>
+                <p class="font-semibold">{{ todoEmptyTitle }}</p>
+                <p class="mt-1 max-w-xl text-sm text-muted">{{ todoEmptyDescription }}</p>
+              </div>
+            </div>
+            <div class="flex flex-wrap gap-2">
+              <Button
+                v-if="todoStore.search.trim() || todoStore.filter !== 'all'"
+                variant="secondary"
+                @click="clearTodoFilters"
+              >
+                清空筛选
+              </Button>
+              <Button class="gap-2" @click="openTodoCreate">
+                <Plus class="h-4 w-4" />
+                新增任务
+              </Button>
+            </div>
+          </div>
+        </Card>
+
+        <ul v-if="todoStore.filteredTodos.length > 0" class="space-y-2">
           <li v-for="item in todoStore.filteredTodos" :key="item.id">
             <Card class="grid gap-2 p-4 md:grid-cols-12">
               <label class="flex items-center gap-2 md:col-span-1">
@@ -380,8 +518,34 @@ const goNextMonth = () => {
       </TabsContent>
 
       <TabsContent value="idea" class="space-y-4">
-        <div class="flex justify-end">
-          <Button @click="openIdeaCreate">新增想法</Button>
+        <section
+          v-if="ideaComposerOpen"
+          class="rounded-xl border border-border bg-surface-card p-4 shadow-sm"
+          aria-label="快速新增想法"
+        >
+          <form class="space-y-3" @submit.prevent="submitIdeaForm">
+            <div class="flex items-start justify-between gap-3">
+              <div>
+                <p class="text-sm font-semibold">快速新增想法</p>
+                <p class="text-sm text-muted">把还没成形的念头先放进看板，后面再推进。</p>
+              </div>
+              <Button type="button" variant="secondary" size="sm" @click="cancelIdeaCreate">取消</Button>
+            </div>
+            <IdeaFormFields
+              :form="ideaForm"
+              :title-error="ideaErrors.title"
+              :priority-options="priorityOptions"
+            />
+            <div class="flex justify-end">
+              <Button type="submit">保存想法</Button>
+            </div>
+          </form>
+        </section>
+        <div v-else class="flex justify-end">
+          <Button class="gap-2" @click="openIdeaCreate">
+            <Plus class="h-4 w-4" />
+            新增想法
+          </Button>
         </div>
 
         <div class="grid gap-3 lg:grid-cols-3">
@@ -392,8 +556,36 @@ const goNextMonth = () => {
             @dragover.prevent
             @drop="onDropLane(status)"
           >
-            <h2 class="mb-2 text-sm font-bold text-muted">{{ statusLabel(status) }}</h2>
+            <div class="mb-3 flex items-center justify-between">
+              <h2 class="text-sm font-bold text-muted">{{ statusLabel(status) }}</h2>
+              <span class="rounded-full bg-surface-base px-2 py-0.5 text-xs text-muted">
+                {{ ideaStore.byStatus[status].length }}
+              </span>
+            </div>
             <ul class="space-y-2">
+              <li
+                v-if="ideaStore.byStatus[status].length === 0"
+                class="rounded-xl border border-dashed border-border bg-surface-base/80 p-3 text-sm text-muted"
+              >
+                <div class="flex gap-3">
+                  <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary-muted text-primary-text">
+                    <Lightbulb class="h-4 w-4" />
+                  </div>
+                  <div>
+                    <p class="font-medium text-foreground">{{ statusLabel(status) }}为空</p>
+                    <p class="mt-1">{{ laneEmptyDescription(status) }}</p>
+                    <Button
+                      v-if="status === 'idea' && !ideaComposerOpen"
+                      class="mt-3 gap-2"
+                      size="sm"
+                      @click="openIdeaCreate"
+                    >
+                      <Plus class="h-4 w-4" />
+                      记录想法
+                    </Button>
+                  </div>
+                </div>
+              </li>
               <li
                 v-for="idea in ideaStore.byStatus[status]"
                 :key="idea.id"
@@ -439,26 +631,56 @@ const goNextMonth = () => {
           </div>
         </Card>
 
-        <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          <Card class="p-4">
-            <p class="text-sm text-muted">任务新增</p>
-            <p class="mt-1 text-2xl font-bold">{{ dashboardData.monthlyTotals.todoCreated }}</p>
-          </Card>
-          <Card class="p-4">
-            <p class="text-sm text-muted">任务活跃</p>
-            <p class="mt-1 text-2xl font-bold">{{ dashboardData.monthlyTotals.todoUpdated }}</p>
-          </Card>
-          <Card class="p-4">
-            <p class="text-sm text-muted">想法新增</p>
-            <p class="mt-1 text-2xl font-bold">{{ dashboardData.monthlyTotals.ideaCreated }}</p>
-          </Card>
-          <Card class="p-4">
-            <p class="text-sm text-muted">想法活跃</p>
-            <p class="mt-1 text-2xl font-bold">{{ dashboardData.monthlyTotals.ideaUpdated }}</p>
+        <div class="grid grid-cols-2 gap-3 lg:grid-cols-4">
+          <Card v-for="metric in dashboardMetrics" :key="metric.label" class="p-4">
+            <div class="flex items-center justify-between gap-3">
+              <p class="text-sm text-muted">{{ metric.label }}</p>
+              <span class="h-2.5 w-2.5 rounded-full" :class="metric.colorClass" />
+            </div>
+            <p class="mt-1 text-2xl font-bold">{{ metric.value }}</p>
           </Card>
         </div>
 
-        <Card class="p-4">
+        <Card class="p-4 md:hidden">
+          <div class="flex items-start gap-3">
+            <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary-muted text-primary-text">
+              <LayoutDashboard class="h-5 w-5" />
+            </div>
+            <div>
+              <h3 class="font-semibold">本月活动</h3>
+              <p class="mt-1 text-sm text-muted">{{ dashboardSummaryText }}</p>
+            </div>
+          </div>
+
+          <div v-if="activeDashboardDays.length > 0" class="mt-4 max-h-96 space-y-2 overflow-y-auto pr-1">
+            <article
+              v-for="row in activeDashboardDays"
+              :key="row.day"
+              class="rounded-lg border border-border bg-surface-base p-3"
+            >
+              <div class="flex items-center justify-between gap-3">
+                <div>
+                  <p class="font-semibold">{{ dayText(row.day) }}日</p>
+                  <p class="text-xs text-muted">{{ row.day }}</p>
+                </div>
+                <Badge variant="secondary">{{ dailyActivityTotal(row) }} 次</Badge>
+              </div>
+              <div class="mt-3 grid grid-cols-2 gap-2 text-sm text-muted">
+                <span>任务新增 {{ row.todoCreated }}</span>
+                <span>任务活跃 {{ row.todoUpdated }}</span>
+                <span>想法新增 {{ row.ideaCreated }}</span>
+                <span>想法活跃 {{ row.ideaUpdated }}</span>
+              </div>
+            </article>
+          </div>
+
+          <div v-else class="mt-4 rounded-lg border border-dashed border-border bg-surface-base p-4 text-sm text-muted">
+            <p class="font-medium text-foreground">本月还没有可回顾的活动</p>
+            <p class="mt-1">新增一个任务或想法后，这里会显示按日期聚合的变化。</p>
+          </div>
+        </Card>
+
+        <Card class="hidden p-4 md:block">
           <div class="grid grid-cols-7 gap-2 text-center text-xs font-medium text-muted">
             <div v-for="label in weekdayLabels" :key="label">周{{ label }}</div>
           </div>
@@ -513,7 +735,7 @@ const goNextMonth = () => {
           </div>
         </Card>
 
-        <Card class="lg:hidden p-3">
+        <Card class="hidden p-3 md:block lg:hidden">
           <p class="text-xs font-semibold text-muted">迷你柱状图图例</p>
           <div class="mt-2 grid grid-cols-2 gap-2 text-xs text-muted">
             <div class="flex items-center gap-2">
@@ -543,7 +765,7 @@ const goNextMonth = () => {
     >
       <button
         type="button"
-        class="flex h-9 w-9 items-center justify-center rounded-full border border-border bg-surface-card text-foreground shadow-md transition hover:bg-surface-base"
+        class="flex h-11 w-11 items-center justify-center rounded-full border border-border bg-surface-card text-foreground shadow-md transition hover:bg-surface-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-border-focus focus-visible:ring-offset-2 focus-visible:ring-offset-surface-card"
         :title="showFloatingLegend ? '收起图例' : '展开图例'"
         @click="showFloatingLegend = !showFloatingLegend"
       >
@@ -553,7 +775,7 @@ const goNextMonth = () => {
 
       <div
         v-if="showFloatingLegend"
-        class="w-36 rounded-xl border border-border bg-surface-elevated/95 p-2.5 shadow-lg backdrop-blur"
+        class="w-36 rounded-xl border border-border bg-surface-elevated p-2.5 shadow-lg"
       >
         <p class="text-xs font-semibold text-foreground">迷你柱状图图例</p>
         <div class="mt-2 space-y-2 text-xs text-muted">
@@ -609,13 +831,10 @@ const goNextMonth = () => {
   align-items: center;
   gap: 0.75rem;
   padding: 0.75rem;
-  border: 1px solid color-mix(in oklch, var(--border-default) 60%, var(--color-primary));
+  border: 1px solid var(--border-default);
   border-radius: 0.875rem;
-  background:
-    linear-gradient(180deg, color-mix(in oklch, var(--surface-card) 94%, var(--color-primary)) 0%, var(--surface-card) 100%);
-  box-shadow:
-    inset 0 0 0 1px color-mix(in oklch, var(--surface-elevated) 72%, transparent),
-    0 10px 24px rgba(0, 0, 0, 0.14);
+  background: var(--surface-card);
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.06);
 }
 
 .todo-toolbar-v2__chips {

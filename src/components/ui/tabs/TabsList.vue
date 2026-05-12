@@ -9,7 +9,7 @@ const forwarded = useForwardProps(props);
 <template>
   <TabsList
     v-bind="forwarded"
-    :class="cn('inline-flex h-10 items-center justify-center rounded-md bg-surface-base p-1 text-muted', props.class)"
+    :class="cn('inline-flex min-h-11 items-center justify-center rounded-md bg-surface-base p-1 text-muted', props.class)"
   >
     <slot />
   </TabsList>

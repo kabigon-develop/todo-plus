@@ -19,7 +19,7 @@ defineProps<{
 <template>
   <div class="grid gap-3">
     <div class="space-y-1">
-      <Input v-model="form.title" placeholder="任务标题" />
+      <Input v-model="form.title" placeholder="任务标题" :error="!!titleError" />
       <p v-if="titleError" class="text-xs text-red-500">{{ titleError }}</p>
     </div>
     <Input v-model="form.description" placeholder="任务描述" />
