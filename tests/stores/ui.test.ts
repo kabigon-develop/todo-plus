@@ -2,7 +2,7 @@
 // document.documentElement is mocked below for classList tests
 import { describe, it, expect, beforeEach } from 'vitest';
 import { setActivePinia, createPinia } from 'pinia';
-import { useUiStore } from '../../src/stores/ui';
+import { useUiStore } from '../../src/store/modules/ui';
 
 // Minimal classList mock for node environment
 function makeClassList() {

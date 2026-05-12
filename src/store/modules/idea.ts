@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import type { Idea, IdeaStatus, Priority } from './types';
+import type { Idea, IdeaStatus, Priority } from '@/types/todo';
 import type { useTodoStore } from './todo';
 
 const STORAGE_KEY = 'todo-plus:ideas';

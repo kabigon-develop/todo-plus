@@ -1,4 +1,4 @@
-import type { Idea, Todo } from '@/stores/types';
+import type { Idea, Todo } from '@/types/todo';
 
 export interface DashboardDailyRow {
   day: string;

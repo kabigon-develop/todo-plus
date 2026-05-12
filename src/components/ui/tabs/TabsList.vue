@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { TabsList, type TabsListProps, useForwardProps } from 'radix-vue';
-import { cn } from '@/lib/utils';
+import { cn } from '@/utils';
 
 const props = defineProps<TabsListProps & { class?: string }>();
 const forwarded = useForwardProps(props);
@@ -9,7 +9,7 @@ const forwarded = useForwardProps(props);
 <template>
   <TabsList
     v-bind="forwarded"
-    :class="cn('inline-flex h-10 items-center justify-center rounded-md bg-surface-base p-1 text-muted', props.class)"
+    :class="cn('inline-flex min-h-11 items-center justify-center rounded-md bg-surface-base p-1 text-muted', props.class)"
   >
     <slot />
   </TabsList>

@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import type { Idea, Todo } from '../../src/stores/types';
+import type { Idea, Todo } from '../../src/types/todo';
 import {
   buildCalendarWeeks,
   buildMonthlyDashboard,
   getDailyMetricMax,
   shiftMonth
-} from '../../src/lib/dashboard';
+} from '../../src/utils/dashboard';
 
 const localIso = (year: number, month1: number, day: number, hour = 0, minute = 0) =>
   new Date(year, month1 - 1, day, hour, minute, 0, 0).toISOString();

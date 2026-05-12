@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { createPinia, setActivePinia } from 'pinia';
-import { useTodoStore } from '../../src/stores/todo';
+import { useTodoStore } from '../../src/store/modules/todo';
 
 describe('todo store', () => {
   beforeEach(() => {

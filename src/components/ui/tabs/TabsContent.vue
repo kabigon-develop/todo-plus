@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { TabsContent, type TabsContentProps, useForwardProps } from 'radix-vue';
-import { cn } from '@/lib/utils';
+import { cn } from '@/utils';
 
 const props = defineProps<TabsContentProps & { class?: string }>();
 const forwarded = useForwardProps(props);
